@@ -271,7 +271,9 @@ public class ProguardTask extends BaritoneGradleTask {
                     pair = entry.getValue();
                 }
             }
-
+            if (pair == null){
+                throw new IllegalArgumentException("could not find: " + lib);
+            }
             // The pair must be non-null
             Objects.requireNonNull(pair);
 

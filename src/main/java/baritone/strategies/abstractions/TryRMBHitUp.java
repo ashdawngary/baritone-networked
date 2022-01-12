@@ -54,6 +54,7 @@ public class TryRMBHitUp extends TryRMB {
     if (rot.isPresent() && isSafeToCancel) {
       RayTraceResult result = RayTraceUtils
           .rayTraceTowards(ctx.player(), rot.get(), ctx.playerController().getBlockReachDistance());
+
       if (result.typeOfHit == RayTraceResult.Type.BLOCK && result.sideHit == EnumFacing.UP) {
         baritone.getLookBehavior().updateTarget(rot.get(), true);
         if (ctx.isLookingAt(pos)) {

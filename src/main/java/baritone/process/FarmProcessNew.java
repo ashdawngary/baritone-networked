@@ -23,8 +23,9 @@ import baritone.api.process.IFarmProcess;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
 import baritone.api.utils.StrategyResult;
-import baritone.strategies.farming.FarmerStrategy;
+import baritone.strategies.utils.FillChest;
 import baritone.utils.BaritoneProcessHelper;
+import net.minecraft.init.Items;
 import net.minecraft.util.math.BlockPos;
 
 public final class FarmProcessNew extends BaritoneProcessHelper implements IFarmProcess {
@@ -43,7 +44,10 @@ public final class FarmProcessNew extends BaritoneProcessHelper implements IFarm
 
     @Override
     public void farm(int range, BlockPos pos) {
-        farmingStrategy = new FarmerStrategy(baritone, range, pos);
+        //farmingStrategy = new FarmerStrategy(baritone, range, pos);
+        farmingStrategy = new FillChest(baritone, new BlockPos(173,72,300), Items.CARROT::equals);
+
+
         active = true;
     }
 
@@ -53,15 +57,13 @@ public final class FarmProcessNew extends BaritoneProcessHelper implements IFarm
     public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
         baritone.getInputOverrideHandler().clearAllKeys();
         StrategyResult maybeCommand = farmingStrategy.execute(calcFailed, isSafeToCancel);
-
-        System.out.println(maybeCommand);
-
         if(maybeCommand.isPresent()){
             // strategy has something to do we are good
             return maybeCommand.get();
         }
 
         onLostControl();
+        logDirect("done");
         return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
     }
 

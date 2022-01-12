@@ -25,9 +25,9 @@ import baritone.api.utils.IPlayerContext;
 import baritone.api.utils.StrategyResult;
 import baritone.process.BuilderProcess;
 import baritone.strategies.abstractions.BaseBaritoneStrategy;
-import baritone.strategies.abstractions.IfElseStrategy;
-import baritone.strategies.abstractions.IfStrategy;
-import baritone.strategies.abstractions.PrioritySequentialStrategy;
+import baritone.strategies.abstractions.grammar.IfElseStrategy;
+import baritone.strategies.abstractions.grammar.IfStrategy;
+import baritone.strategies.abstractions.grammar.PrioritySequentialStrategy;
 import baritone.strategies.abstractions.ScanAndAct;
 import baritone.strategies.abstractions.TryBreak;
 import java.util.ArrayList;
@@ -59,6 +59,7 @@ import net.minecraft.world.World;
  * Farms.
  */
 public class FarmerStrategy extends BaseBaritoneStrategy {
+  private final boolean expanded_desc = false;
 
   public static final List<Item> FARMLAND_PLANTABLE = Arrays.asList(
       Items.BEETROOT_SEEDS,
@@ -119,7 +120,7 @@ public class FarmerStrategy extends BaseBaritoneStrategy {
     posFilterer.put(Block.getIdFromBlock(Blocks.SOUL_SAND), isAirAbove);
 
     // 2. for each harvestable block, we filter if they are not ready for harvest(and if air is above).
-    for (FarmerStrategy.Harvest harvest : FarmerStrategy.Harvest.values()) {
+    for (Harvest harvest : Harvest.values()) {
       isHarvestable.put(Block.getIdFromBlock(harvest.block),
           (pos, ctx) -> harvest
               .readyToHarvest(ctx.world(), pos, ctx.world().getBlockState(pos)));
@@ -137,14 +138,14 @@ public class FarmerStrategy extends BaseBaritoneStrategy {
       return false;
     };
 
-    for (FarmerStrategy.Harvest harvest : FarmerStrategy.Harvest.values()) {
+    for (Harvest harvest : Harvest.values()) {
       int blockid = Block.getIdFromBlock(harvest.block);
       isBoneMealable.put(blockid,
           canBoneMeal);
     }
 
     // merge the two predicates together
-    for (FarmerStrategy.Harvest harvest : FarmerStrategy.Harvest.values()) {
+    for (Harvest harvest : Harvest.values()) {
       int blockid = Block.getIdFromBlock(harvest.block);
       posFilterer.put(blockid,
           (p, c) -> isAirAbove.apply(p, c) && (isBoneMealable.get(blockid).apply(p, c) || isHarvestable.get(blockid)
@@ -166,7 +167,7 @@ public class FarmerStrategy extends BaseBaritoneStrategy {
     });
 
     // 4 goals for harvesting:
-    for (FarmerStrategy.Harvest harvest : FarmerStrategy.Harvest.values()) {
+    for (Harvest harvest : Harvest.values()) {
       final int blockid = Block.getIdFromBlock(harvest.block);
       goalMaker.put(blockid, (pos, ctx) -> (goalz) -> {
         if (isBoneMealable.get(blockid).apply(pos, ctx)  && baritone.getInventoryBehavior().throwaway(false, this::isBoneMeal)) {
@@ -194,7 +195,7 @@ public class FarmerStrategy extends BaseBaritoneStrategy {
     onBlockStrategy.put(Block.getIdFromBlock(Blocks.SOUL_SAND), replantStrategy);
 
     // at every tick, we evaluate whether to try breaking or spamming bonemeal based on if its harvestable or not.
-    for (FarmerStrategy.Harvest harvest : FarmerStrategy.Harvest.values()) {
+    for (Harvest harvest : Harvest.values()) {
       final int blockid = Block.getIdFromBlock(harvest.block);
       onBlockStrategy.put(blockid,
           (pos, ignored) -> new IfStrategy(baritone, isBlockNotAir.apply(pos),
@@ -207,7 +208,7 @@ public class FarmerStrategy extends BaseBaritoneStrategy {
     //6 time for the magic
 
     ArrayList<Block> scan = new ArrayList<>();
-    for (FarmerStrategy.Harvest harvest : FarmerStrategy.Harvest.values()) {
+    for (Harvest harvest : Harvest.values()) {
       scan.add(harvest.block);
     }
     if (Baritone.settings().replantCrops.value) {
@@ -224,8 +225,17 @@ public class FarmerStrategy extends BaseBaritoneStrategy {
         onBlockStrategy);
 
     compositeFarmer = new PrioritySequentialStrategy(baritone, farmer, pickUpItems);
+
   }
 
+  @Override
+  public String toString() {
+    if(expanded_desc) {
+      return compositeFarmer.toString();
+    }else{
+      return String.format("(farm2 %s %s)",range,center);
+    }
+  }
 
   @Override
   public void reset() {

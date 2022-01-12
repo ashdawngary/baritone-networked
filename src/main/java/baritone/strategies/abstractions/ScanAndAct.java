@@ -26,6 +26,8 @@ import baritone.api.process.PathingCommandType;
 import baritone.api.utils.IPlayerContext;
 import baritone.api.utils.StrategyResult;
 import baritone.cache.WorldScanner;
+import baritone.strategies.abstractions.grammar.IdStrategy;
+import baritone.strategies.abstractions.grammar.PrioritySequentialStrategy;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -113,6 +115,7 @@ public class ScanAndAct extends BaseBaritoneStrategy implements IBaritoneProcStr
       }
       return op.apply(pos, ctx);
     }).collect(Collectors.toList());
+
 
     scanner = new PrioritySequentialStrategy(baritone,
         currentPriorities.toArray(new IBaritoneProcStrategy[0]));
