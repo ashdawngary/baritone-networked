@@ -16,6 +16,7 @@
 -dontwarn org.lwjgl.**
 
 -keep class baritone.api.** { *; } # this is the keep api
+-keep class baritone.strategies.utils.patch.** { *; } # this is the patch classes
 
 # service provider needs these class names
 -keep class baritone.BaritoneProvider

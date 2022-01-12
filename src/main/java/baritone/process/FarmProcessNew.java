@@ -23,6 +23,7 @@ import baritone.api.process.IFarmProcess;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
 import baritone.api.utils.StrategyResult;
+import baritone.strategies.farming.FarmerStrategy;
 import baritone.strategies.utils.FillChest;
 import baritone.utils.BaritoneProcessHelper;
 import net.minecraft.init.Items;
@@ -44,8 +45,7 @@ public final class FarmProcessNew extends BaritoneProcessHelper implements IFarm
 
     @Override
     public void farm(int range, BlockPos pos) {
-        //farmingStrategy = new FarmerStrategy(baritone, range, pos);
-        farmingStrategy = new FillChest(baritone, new BlockPos(173,72,300), Items.CARROT::equals);
+        farmingStrategy = new FarmerStrategy(baritone, range, pos);
 
 
         active = true;

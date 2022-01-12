@@ -1,6 +1,8 @@
 package baritone.strategies.utils.patch;//
 
 
+import baritone.utils.accessor.ICreativeSlot;
+import baritone.utils.accessor.IGuiContainer;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -9,7 +11,6 @@ import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;

@@ -25,10 +25,15 @@ import baritone.api.utils.StrategyResult;
 import baritone.api.utils.input.Input;
 import baritone.strategies.abstractions.BaseBaritoneStrategy;
 import baritone.strategies.utils.patch.Inventory;
+import baritone.strategies.utils.patch.SlotHelper;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 
 // 172 72 300
@@ -38,12 +43,13 @@ public class FillChest extends BaseBaritoneStrategy {
   private StateTimer<DepositState> cState;
   private BlockPos pos;
   private Predicate<Item> toFill;
+  private SlotHelper sh;
   public FillChest(Baritone b, BlockPos chestPos, Predicate<Item> toDeposit) {
     super(b);
     cState = new StateTimer<>(DepositState.TARGETING);
     pos = chestPos;
     toFill = Objects.requireNonNull(toDeposit);
-
+    sh = new SlotHelper(Minecraft.getMinecraft());
   }
 
   @Override
@@ -70,10 +76,32 @@ public class FillChest extends BaseBaritoneStrategy {
       case OPENING:
         if (ctx.isLookingAt(pos)) {
           baritone.getInputOverrideHandler().setInputForceState(Input.CLICK_RIGHT, true);
-          cState.transition(DepositState.TRANSFER);
+          if (sh.currentScreenIsContainer()) {
+            cState.transition(DepositState.TRANSFER);
+          }
         }
         return StrategyResult.of(new PathingCommand(null, PathingCommandType.REQUEST_PAUSE));
       case TRANSFER:
+
+
+        if(!sh.currentScreenIsContainer()){
+          System.out.println("lost guicontainer while transfer.");
+          return StrategyResult.FAILURE;
+        }
+
+        GuiContainer gc = sh.getGuiContainer();
+
+        int isize = gc.inventorySlots.inventorySlots.size();
+
+        for (int i_off = -36; i_off <= 0; i_off++ ){ // other inv goes first.
+           int slot = isize + i_off;
+           Optional<ItemStack> is = Optional.ofNullable(sh.getSlotStack(slot));
+           if(is.isPresent() && toFill.test(is.get().getItem())){
+             Inventory.slotClick(sh,slot,0, true);
+             return StrategyResult.of(new PathingCommand(null, PathingCommandType.REQUEST_PAUSE));
+           }
+        }
+
         cState.transition(DepositState.CLOSING);
         return StrategyResult.of(new PathingCommand(null, PathingCommandType.REQUEST_PAUSE));
       case CLOSING:
