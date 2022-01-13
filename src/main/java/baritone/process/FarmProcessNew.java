@@ -23,6 +23,7 @@ import baritone.api.process.IFarmProcess;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
 import baritone.api.utils.StrategyResult;
+import baritone.strategies.abstractions.grammar.SequentialStrategy;
 import baritone.strategies.farming.FarmerStrategy;
 import baritone.strategies.utils.FillChest;
 import baritone.utils.BaritoneProcessHelper;
@@ -44,10 +45,9 @@ public final class FarmProcessNew extends BaritoneProcessHelper implements IFarm
     }
 
     @Override
-    public void farm(int range, BlockPos pos) {
-        farmingStrategy = new FarmerStrategy(baritone, range, pos);
-
-
+    public void farm(int range, BlockPos pos, IBaritoneProcStrategy onFinish) {
+        farmingStrategy = new SequentialStrategy(new FarmerStrategy(baritone, range, pos), onFinish);
+        //farmingStrategy = new FarmerStrategy(baritone, range, pos);
         active = true;
     }
 
@@ -63,7 +63,7 @@ public final class FarmProcessNew extends BaritoneProcessHelper implements IFarm
         }
 
         onLostControl();
-        logDirect("done");
+        logDirect("done - " + maybeCommand.toString());
         return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
     }
 

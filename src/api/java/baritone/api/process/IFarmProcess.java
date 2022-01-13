@@ -17,6 +17,7 @@
 
 package baritone.api.process;
 
+import baritone.api.utils.StrategyResult;
 import net.minecraft.util.math.BlockPos;
 
 public interface IFarmProcess extends IBaritoneProcess {
@@ -28,7 +29,15 @@ public interface IFarmProcess extends IBaritoneProcess {
      * @param range The distance from center to farm from
      * @param pos   The center position to base the range from
      */
-    void farm(int range, BlockPos pos);
+    default void farm(int range, BlockPos pos){farm(range, pos, new IBaritoneProcStrategy() {
+        @Override
+        public void reset() {}
+
+        @Override
+        public StrategyResult execute(boolean calcFailed, boolean isSafeToCancel) {
+            return null;
+        }
+    });}
 
     /**
      * Begin to search for nearby crops to farm.
@@ -42,4 +51,6 @@ public interface IFarmProcess extends IBaritoneProcess {
      * @param range The distance to search for crops to farm
      */
     default void farm(int range) {farm(range, null);}
+
+    void farm(int range, BlockPos pos, IBaritoneProcStrategy deposit);
 }

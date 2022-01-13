@@ -17,6 +17,7 @@
 
 package baritone.command.defaults;
 
+import baritone.Baritone;
 import baritone.api.IBaritone;
 import baritone.api.cache.IWaypoint;
 import baritone.api.command.Command;
@@ -24,10 +25,16 @@ import baritone.api.command.argument.IArgConsumer;
 import baritone.api.command.datatypes.ForWaypoints;
 import baritone.api.command.exception.CommandException;
 import baritone.api.command.exception.CommandInvalidStateException;
+import baritone.api.pathing.goals.GoalNear;
 import baritone.api.utils.BetterBlockPos;
+import baritone.strategies.abstractions.AchieveGoalStrategy;
+import baritone.strategies.abstractions.grammar.SequentialStrategy;
+import baritone.strategies.utils.FillChest;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
+import net.minecraft.init.Items;
+import net.minecraft.util.math.BlockPos;
 
 public class Farm2Command extends Command {
 
@@ -59,9 +66,16 @@ public class Farm2Command extends Command {
       }
       origin = waypoint.getLocation();
     }
+    Baritone _b = (Baritone)baritone;
 
-    baritone.getFarmProcessNew().farm(range, origin);
+    baritone.getFarmProcessNew().farm(range, origin,
+        new SequentialStrategy(
+            new AchieveGoalStrategy(_b, new GoalNear(new BlockPos(173,72,300), 2)),
+            new FillChest(_b, new BlockPos(173,72,300), Items.CARROT::equals)));
+
+
     logDirect("Farming on the new farm2!");
+
   }
 
   @Override

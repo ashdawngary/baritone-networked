@@ -18,6 +18,7 @@
 package baritone.strategies.utils;
 
 import baritone.Baritone;
+import baritone.api.IBaritone;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
 import baritone.api.utils.Rotation;
@@ -68,7 +69,9 @@ public class FillChest extends BaseBaritoneStrategy {
         Optional<Rotation> rot = RotSearch.findVantage(ctx, pos,SidePreference.ANY); //RotationUtils.reachable(ctx, pos);
         if (rot.isPresent() && isSafeToCancel ) {
           baritone.getLookBehavior().updateTarget(rot.get(), true);
-          cState.transition(DepositState.OPENING);
+          if (ctx.isLookingAt(pos)) {
+            cState.transition(DepositState.OPENING);
+          }
           return StrategyResult.of(new PathingCommand(null, PathingCommandType.REQUEST_PAUSE));
         }
         return StrategyResult.FAILURE;
@@ -79,6 +82,9 @@ public class FillChest extends BaseBaritoneStrategy {
           if (sh.currentScreenIsContainer()) {
             cState.transition(DepositState.TRANSFER);
           }
+        }
+        if(cState.elapsed() > 3000){
+          cState.transition(DepositState.TARGETING);
         }
         return StrategyResult.of(new PathingCommand(null, PathingCommandType.REQUEST_PAUSE));
       case TRANSFER:

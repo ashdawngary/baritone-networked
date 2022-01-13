@@ -37,6 +37,19 @@ public class StrategyResult {
     return new StrategyResult(pathingCommand);
   }
 
+  @Override
+  public String toString() {
+    if(this.equals(SUCCESS)){
+      return "SUCCESS";
+    }
+    else if(this.equals(FAILURE)){
+      return "FAIL";
+    }
+    else{
+      return inside.toString();
+    }
+  }
+
   public boolean isPresent(){
     return this.inside != null;
   }

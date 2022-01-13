@@ -18,6 +18,7 @@
 package baritone.strategies.abstractions;
 
 import baritone.Baritone;
+import baritone.api.IBaritone;
 import baritone.api.process.IBaritoneProcStrategy;
 import baritone.api.utils.IPlayerContext;
 

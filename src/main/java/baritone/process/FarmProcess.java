@@ -21,6 +21,7 @@ import baritone.Baritone;
 import baritone.api.pathing.goals.Goal;
 import baritone.api.pathing.goals.GoalBlock;
 import baritone.api.pathing.goals.GoalComposite;
+import baritone.api.process.IBaritoneProcStrategy;
 import baritone.api.process.IFarmProcess;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
@@ -100,7 +101,7 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
     }
 
     @Override
-    public void farm(int range, BlockPos pos) {
+    public void farm(int range, BlockPos pos, IBaritoneProcStrategy ignore) {
         if (pos == null) {
             center = baritone.getPlayerContext().playerFeet();
         } else {

@@ -51,6 +51,7 @@ public class SequentialStrategy implements IBaritoneProcStrategy {
         return StrategyResult.FAILURE;
       }
       currentStrat++;
+      calcFailed = false;
     }
     return StrategyResult.SUCCESS;
   }
